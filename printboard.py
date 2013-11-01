@@ -15,7 +15,7 @@ def printboard(board,selected=[],dests=[]):
 #        print bin(selected)[2:].zfill(32)
 
     #add player piece locations together to make string (0 no pieces, 1 player 1's piece, 2 player 2's piece)
-    board_string = str(int(bin(board[0])[2:].zfill(32)) + 2 * int(bin(board[1])[2:].zfill(32))).zfill(32)
+    board_string = str(int(bin(board[0])[2:].zfill(32)) + 2 * int(bin(board[1])[2:].zfill(32)) + 4 * int(bin(board[2])[2:].zfill(32))).zfill(32)
 
     selected = flatten([selected])
     if selected != []:
@@ -47,6 +47,6 @@ def printboard(board,selected=[],dests=[]):
     board_string = re.sub('(.{16})', '\\1\n', board_string, 0, re.DOTALL)
 
     #change representation of player pieces and empty squares
-    board_string = board_string.translate(maketrans('01234','_HOPD'),"'[]")
+    board_string = board_string.translate(maketrans('0123456','_HOPDKK'),"'[]")
 
     print board_string
