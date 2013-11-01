@@ -1,0 +1,20 @@
+# Bobby Yankou
+# Artificial Intelligence
+# Project #1
+# Checkers
+# Show All Moves
+
+def show_all_moves(board,player):
+    from printboard import printboard
+    from find_moves import find_moves
+
+    all_pieces = []
+    all_dests = []
+    for i in range(0,bin(board(player)).count('1')):
+        test_piece = 2**i
+        if bin(board[player]).count('1') - 1 == bin(board[player] - (test_piece)).count('1'):
+            [piece,dests,jumped] = find_moves(test_piece,board,player)
+            all_pieces.extend(piece)
+            all_dests.extend(dests)
+
+    printboard(board,all_pieces,all_dests)
