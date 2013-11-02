@@ -17,30 +17,28 @@ from flatten import flatten
 from after_move import after_move
 from row_mod import row_mod
 from col_mod import col_mod
-from became_king import became_king
 from do_ai import do_ai
+import globes
 
 import numpy
 from numpy import linalg
 import re
 import itertools
 from random import choice
-from time import sleep
+from time import time,sleep
 
-#NEED TO INDICATE WHICH PIECES ARE KINGS
-
-#NEED TO ADD AI                                     (mad hard)
+#NEED TO FIX AI                                     (mad hard)
+#NEED TO IMPROVE HEURISTIC
 #NEED TO ADD GRAPHICS COLOURS                       (medium)
+# should add something that prints out all possible moves when it shows them
+# add something that when a first depth move leads to loss,
+#   remove that move from iterative deepening considerations
 
 #NEED TO REMOVE CHECK_MOVE file
 #need to update check_input to make sure it receives two ints
 
 board_player1 = 0b00000000000000000000111111111111;
 board_player2 = 0b11111111111100000000000000000000;
-board_kings   = 0b00000000000000000000000000000000;
-
-board_player1 = 0b00000000000000110000000000000000;
-board_player2 = 0b00000000001000000000000000000000;
 board_kings   = 0b00000000000000000000000000000000;
 
 board = [board_player1, board_player2, board_kings]
@@ -50,9 +48,8 @@ printboard(board)
 #board_matrix = re.findall('....', format(board[0]+2*board[1], '#034b'))
 #board_matrix = re.findall('....',re.sub('('str(int(bin(board[0])[2:].zfill(32)) + 2 * int(bin(board[1])[2:].zfill(32)))))
 
-time = 0
-player = 1 #0 indicates black (bottom), 1 is red (top)
-king = 2
+wait = 0 #time to wait as random computer makes moves
+player = 0 #0 indicates black (bottom), 1 is red (top)
 turn = 0 #indicate which turn it is
 two_pl = raw_input('Two player game? (y/n)') == 'y'
 if two_pl:
@@ -60,26 +57,34 @@ if two_pl:
 else:
     random = raw_input('Should computer play randomly? (y/n)') == 'y'
     self = raw_input('Should computer play itself? (y/n)') == 'y'
+    if not random:
+        globes.limit = input('What is the AI time limit? (seconds)')
 
 while bin(board[0]).count('1') != 0 and bin(board[1]).count('1') != 0:
     print "Turn: " + str(turn)
     if self:
         #make computer play itself
         if random:
-            sleep(time)
+            sleep(wait)
             print "Computer " + str(player+1) + " is looking at its options."
             all_pieces = show_all_moves(board,player)
-            sleep(time)
+            sleep(wait)
             print "It's picked a piece..."
             [piece,dests,jumped] = show_moves(choice(all_pieces),board,player)
             for i in range(0,len(jumped)):
                 jumped[i] = flatten(jumped[i])
             [dest,jumped] = check_dest(choice(dests),dests,jumped,piece,board,1)
-            sleep(time)
+            sleep(wait)
             print "And now it's moved:"
         else:
             print "Do AI, dumby"
-            [piece, dest, jumped] = do_ai(board,player)
+            globes.timer = time()
+            [piece, dest, jumped,holder] = do_ai(board,player)
+            show_moves(piece,board,player)
+            current_time = time() - globes.timer
+            print "Computer took " + str(current_time) + " seconds to move."
+            print "Holder is " + str(holder)
+
     elif player == 0: #player's turn
         print "Player 1's turn."
         show = raw_input('Show all possible moves? (y/n)') == 'y'
@@ -107,29 +112,25 @@ while bin(board[0]).count('1') != 0 and bin(board[1]).count('1') != 0:
             print "Player 2 moved:"
         else:
             if random:
-                sleep(time)
+                sleep(wait)
                 print "The computer is looking at its options."
                 all_pieces = show_all_moves(board,player)
-                sleep(time)
+                sleep(wait)
                 print "It's picked a piece..."
                 [piece,dests,jumped] = show_moves(choice(all_pieces),board,player)
                 for i in range(0,len(jumped)):
                     jumped[i] = flatten(jumped[i])
                 [dest,jumped] = check_dest(choice(dests),dests,jumped,piece,board,1)
-                sleep(time)
+                sleep(wait)
                 print "And now it's moved:"
             else:
                 print "Do AI, dumby"
-                [piece, dest, jumped] = do_ai(board,player)
-
-    #if piece was king
-    if bin(board[king]).count('1') - 1 == bin(board[king] - (piece)).count('1'):
-        #update king position
-        board[king] = board[king]-piece+dest
-    else:
-        #check if piece became king
-        if became_king(dest,board,player):
-            board[king] = board[king]+dest
+                globes.timer = time()
+                [piece, dest, jumped, holder] = do_ai(board,player)
+                show_moves(piece,board,player)
+                current_time = time() - globes.timer
+                print "Computer took " + str(current_time) + " seconds to move."
+                print "Holder is " + str(holder)
 
     state = after_move([piece,[dest,jumped]],[board,player])
     board = state[0]

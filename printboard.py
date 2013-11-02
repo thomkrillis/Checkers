@@ -47,6 +47,6 @@ def printboard(board,selected=[],dests=[]):
     board_string = re.sub('(.{16})', '\\1\n', board_string, 0, re.DOTALL)
 
     #change representation of player pieces and empty squares
-    board_string = board_string.translate(maketrans('0123456','_HOPDKK'),"'[]")
+    board_string = board_string.translate(maketrans('0123456','_HOPDKJ'),"'[]")
 
     print board_string

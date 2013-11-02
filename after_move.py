@@ -6,6 +6,7 @@
 
 def after_move(move,state):
     from flatten import flatten
+    from became_king import became_king
 
     piece = move[0]
     dest = move[1][0]
@@ -16,6 +17,15 @@ def after_move(move,state):
     player = state[1]
 
     king = 2
+
+    #if piece was king
+    if bin(board[king]).count('1') - 1 == bin(board[king] - (piece)).count('1'):
+        #update king position
+        board[king] = board[king]-piece+dest
+    else:
+        #check if piece became king
+        if became_king(dest,board,player):
+            board[king] = board[king]+dest
 
     #update board
     board[player] = board[player]-piece+dest
