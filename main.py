@@ -14,9 +14,11 @@ from check_dest import check_dest
 from check_free import check_free
 from check_all_moves import check_all_moves
 from flatten import flatten
+from after_move import after_move
 from row_mod import row_mod
 from col_mod import col_mod
 from became_king import became_king
+from do_ai import do_ai
 
 import numpy
 from numpy import linalg
@@ -37,9 +39,9 @@ board_player1 = 0b00000000000000000000111111111111;
 board_player2 = 0b11111111111100000000000000000000;
 board_kings   = 0b00000000000000000000000000000000;
 
-#board_player1 = 0b00000100000000000000000000000000;
-#board_player2 = 0b00000000000000000000000000100000;
-#board_kings   = 0b00000000000000000000000000000000;
+board_player1 = 0b00000000000000110000000000000000;
+board_player2 = 0b00000000001000000000000000000000;
+board_kings   = 0b00000000000000000000000000000000;
 
 board = [board_player1, board_player2, board_kings]
 
@@ -49,7 +51,7 @@ printboard(board)
 #board_matrix = re.findall('....',re.sub('('str(int(bin(board[0])[2:].zfill(32)) + 2 * int(bin(board[1])[2:].zfill(32)))))
 
 time = 0
-player = 0 #0 indicates black (bottom), 1 is red (top)
+player = 1 #0 indicates black (bottom), 1 is red (top)
 king = 2
 turn = 0 #indicate which turn it is
 two_pl = raw_input('Two player game? (y/n)') == 'y'
@@ -77,6 +79,7 @@ while bin(board[0]).count('1') != 0 and bin(board[1]).count('1') != 0:
             print "And now it's moved:"
         else:
             print "Do AI, dumby"
+            [piece, dest, jumped] = do_ai(board,player)
     elif player == 0: #player's turn
         print "Player 1's turn."
         show = raw_input('Show all possible moves? (y/n)') == 'y'
@@ -117,6 +120,7 @@ while bin(board[0]).count('1') != 0 and bin(board[1]).count('1') != 0:
                 print "And now it's moved:"
             else:
                 print "Do AI, dumby"
+                [piece, dest, jumped] = do_ai(board,player)
 
     #if piece was king
     if bin(board[king]).count('1') - 1 == bin(board[king] - (piece)).count('1'):
@@ -127,17 +131,8 @@ while bin(board[0]).count('1') != 0 and bin(board[1]).count('1') != 0:
         if became_king(dest,board,player):
             board[king] = board[king]+dest
 
-    #update board
-    board[player] = board[player]-piece+dest
-    if len(jumped) == 1:
-        jumped = flatten(jumped)
-    if jumped != []:
-        for i in range(0,len(jumped)):
-            board[1-player] = board[1-player] - jumped[i]
-            #if jumped piece was king
-            if bin(board[king]).count('1') - 1 == bin(board[king] - (jumped[i])).count('1'):
-                #update king position
-                board[king] = board[king]-jumped[i]
+    state = after_move([piece,[dest,jumped]],[board,player])
+    board = state[0]
     printboard(board)        
 
     if bin(board[0]).count('1') == 0:

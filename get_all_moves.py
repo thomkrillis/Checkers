@@ -2,11 +2,16 @@
 # Artificial Intelligence
 # Project #1
 # Checkers
-# Check All Moves
+# Get All Moves
 
-def check_all_moves(board,player):
+def get_all_moves(state):
     from find_moves import find_moves
 
+    board = state[0]
+    player = state[1]
+
+    move_set = []
+    legal_move_set = []
     all_pieces = []
     all_dests = []
     all_jumpers = []
@@ -16,14 +21,11 @@ def check_all_moves(board,player):
         if bin(board[player]).count('1') - 1 == bin(board[player] - (test_piece)).count('1') and board[player] - (test_piece) >= 0:
             [piece,dests,jumped] = find_moves(test_piece,board,player)
             if dests != []:
-                all_pieces.extend([piece])
-                all_dests.extend(dests)
-                for j in range(0,len(jumped)):
+                for j in range(0,len(dests)):
+                    move_set.append([piece,[dests[j],jumped[j]]])
                     if jumped[j] != '':
-                        all_jumpers.extend([piece])
-                        jump_dests.extend([dests[j]])
-    if all_jumpers != []:
-        all_pieces = all_jumpers
-        all_dests = jump_dests
+                        legal_move_set.append([piece,[dests[j],jumped[j]]])
+    if legal_move_set != []:
+        move_set = legal_move_set
 
-    return [all_pieces,all_dests]
+    return move_set
