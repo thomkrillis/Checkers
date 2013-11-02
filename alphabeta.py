@@ -28,7 +28,10 @@ def alphabeta(state,depth,depth_limit,alpha,beta,maxp,op,first=0):
     if maxp:
         moves = get_all_moves(state)
         if len(moves) == 1 and first:
-            return [0,moves,1,1]
+            temp_state = after_move(moves[0],state)
+            temp_state[1] = op
+            h = heuristic(temp_state)
+            return [h,moves,1,1]
         for i in range(0,len(moves)):
             temp_state = after_move(moves[i],state)
             [a_temp,move_temp,timeout,holder] = alphabeta(temp_state,depth+1,depth_limit,alpha,beta,0,op)

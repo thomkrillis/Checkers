@@ -7,6 +7,7 @@
 def find_moves(piece,board,player,fm=1,king=0,root=''):
     from row_mod import row_mod
     from col_mod import col_mod
+    from after_move import after_move
 
     dests = []
     jumped = []
@@ -26,7 +27,11 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                 elif root != 'ul' and col_mod(piece) != 3 and bin(board[player]).count('1') - 1 != bin(board[player] - (piece<<4)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<9)).count('1'):
                     if 2147483648L >= piece<<9:
                         if king_piece:
-                            [holder,new_dests,new_jumped] = find_moves(piece<<9,board,player,0,1,'dr')
+                            old_piece = piece
+                            new_piece = piece<<9
+                            jump_piece = piece<<4
+                            [new_board,new_player] = after_move([old_piece,[new_piece,[jump_piece]]],[board,player])
+                            [holder,new_dests,new_jumped] = find_moves(piece<<9,new_board,player,0,1,'dr')
                         else:
                             [holder,new_dests,new_jumped] = find_moves(piece<<9,board,player,0)
                         dests.extend(new_dests)
@@ -53,7 +58,11 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                     elif root != 'ur' and bin(board[player]).count('1') - 1 != bin(board[player] - (piece<<3)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<7)).count('1'):
                         if 2147483648L >= piece<<7:
                             if king_piece:
-                                [holder,new_dests,new_jumped] = find_moves(piece<<7,board,player,0,1,'dl')
+                                old_piece = piece
+                                new_piece = piece<<7
+                                jump_piece = piece<<3
+                                [new_board,new_player] = after_move([old_piece,[new_piece,[jump_piece]]],[board,player])
+                                [holder,new_dests,new_jumped] = find_moves(piece<<7,new_board,player,0,1,'dl')
                             else:
                                 [holder,new_dests,new_jumped] = find_moves(piece<<7,board,player,0)
                             dests.extend(new_dests)
@@ -81,7 +90,11 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                     elif root != 'ul' and bin(board[player]).count('1') - 1 != bin(board[player] - (piece<<5)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<9)).count('1'):
                         if 2147483648L >= piece<<9:
                             if king_piece:
-                                [holder,new_dests,new_jumped] = find_moves(piece<<9,board,player,0,1,'dr')
+                                old_piece = piece
+                                new_piece = piece<<9
+                                jump_piece = piece<<5
+                                [new_board,new_player] = after_move([old_piece,[new_piece,[jump_piece]]],[board,player])
+                                [holder,new_dests,new_jumped] = find_moves(piece<<9,new_board,player,0,1,'dr')
                             else:
                                 [holder,new_dests,new_jumped] = find_moves(piece<<9,board,player,0)
                             dests.extend(new_dests)
@@ -107,7 +120,11 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                 elif root != 'ur' and col_mod(piece) != 0 and bin(board[player]).count('1') - 1 != bin(board[player] - (piece<<4)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<7)).count('1'):
                     if 2147483648L >= piece<<7:
                         if king_piece:
-                            [holder,new_dests,new_jumped] = find_moves(piece<<7,board,player,0,1,'dl')
+                            old_piece = piece
+                            new_piece = piece<<7
+                            jump_piece = piece<<4
+                            [new_board,new_player] = after_move([old_piece,[new_piece,[jump_piece]]],[board,player])
+                            [holder,new_dests,new_jumped] = find_moves(piece<<7,new_board,player,0,1,'dl')
                         else:
                             [holder,new_dests,new_jumped] = find_moves(piece<<7,board,player,0)
                         dests.extend(new_dests)
@@ -139,7 +156,11 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                 elif root != 'dr' and col_mod(piece) != 0 and bin(board[player]).count('1') - 1 != bin(board[player] - (piece>>4)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>9)).count('1'):
                     if 0 < piece>>9:
                         if king_piece:
-                            [holder,new_dests,new_jumped] = find_moves(piece>>9,board,player,0,1,'ul')
+                            old_piece = piece
+                            new_piece = piece>>9
+                            jump_piece = piece>>4
+                            [new_board,new_player] = after_move([old_piece,[new_piece,[jump_piece]]],[board,player])
+                            [holder,new_dests,new_jumped] = find_moves(piece>>9,new_board,player,0,1,'ul')
                         else:
                             [holder,new_dests,new_jumped] = find_moves(piece>>9,board,player,0)
                         dests.extend(new_dests)
@@ -166,7 +187,11 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                     elif root != 'dl' and bin(board[player]).count('1') - 1 != bin(board[player] - (piece>>3)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>7)).count('1'):
                         if 0 < piece>>7:
                             if king_piece:
-                                [holder,new_dests,new_jumped] = find_moves(piece>>7,board,player,0,1,'ur')
+                                old_piece = piece
+                                new_piece = piece>>7
+                                jump_piece = piece>>3
+                                [new_board,new_player] = after_move([old_piece,[new_piece,[jump_piece]]],[board,player])
+                                [holder,new_dests,new_jumped] = find_moves(piece>>7,new_board,player,0,1,'ur')
                             else:
                                 [holder,new_dests,new_jumped] = find_moves(piece>>7,board,player,0)
                             dests.extend(new_dests)
@@ -194,7 +219,11 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                     elif root != 'dr' and bin(board[player]).count('1') - 1 != bin(board[player] - (piece>>5)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>9)).count('1'):
                         if 0 < piece>>9:
                             if king_piece:
-                                [holder,new_dests,new_jumped] = find_moves(piece>>9,board,player,0,1,'ul')
+                                old_piece = piece
+                                new_piece = piece>>9
+                                jump_piece = piece>>5
+                                [new_board,new_player] = after_move([old_piece,[new_piece,[jump_piece]]],[board,player])
+                                [holder,new_dests,new_jumped] = find_moves(piece>>9,new_board,player,0,1,'ul')
                             else:
                                 [holder,new_dests,new_jumped] = find_moves(piece>>9,board,player,0)
                             dests.extend(new_dests)
@@ -220,7 +249,11 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                 elif root != 'dl' and col_mod(piece) != 3 and bin(board[player]).count('1') - 1 != bin(board[player] - (piece>>4)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>7)).count('1'):
                     if 0 < piece>>7:
                         if king_piece:
-                            [holder,new_dests,new_jumped] = find_moves(piece>>7,board,player,0,1,'ur')
+                            old_piece = piece
+                            new_piece = piece>>7
+                            jump_piece = piece>>4
+                            [new_board,new_player] = after_move([old_piece,[new_piece,[jump_piece]]],[board,player])
+                            [holder,new_dests,new_jumped] = find_moves(piece>>7,new_board,player,0,1,'ur')
                         else:
                             [holder,new_dests,new_jumped] = find_moves(piece>>7,board,player,0)
                         dests.extend(new_dests)
