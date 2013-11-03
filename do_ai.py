@@ -60,4 +60,5 @@ def do_ai(board,player):
         dest = move[1][0]
         jumped = [move[1][1]]
 
+    print "heur: " + str(holder)
     return [piece,dest,jumped,holder]

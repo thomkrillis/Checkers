@@ -18,6 +18,7 @@ from after_move import after_move
 from row_mod import row_mod
 from col_mod import col_mod
 from do_ai import do_ai
+from heuristic import heuristic
 import globes
 
 import numpy
@@ -27,12 +28,11 @@ import itertools
 from random import choice
 from time import time,sleep
 
-#NEED TO FIX AI                                     (mad hard)
-#NEED TO IMPROVE HEURISTIC
+#MIGHT NEED TO FIX AI???? seems to make some bad choices, might just be heuristic
+#NEED TO IMPROVE HEURISTIC - special case of 2v1 kings
 #NEED TO ADD GRAPHICS COLOURS                       (medium)
+
 # should add something that prints out all possible moves when it shows them
-# add something that when a first depth move leads to loss,
-#   remove that move from iterative deepening considerations
 
 #NEED TO REMOVE CHECK_MOVE file
 #need to update check_input to make sure it receives two ints
@@ -49,6 +49,13 @@ board_kings   = 0b00000000000000000000000000000000;
 #board_player2 = 0b10001000100010001000100010001000;
 #board_kings   = 0b00000000000000000000000000000000;
 
+#board_player1 = 0b00000000000011000001000011011110;
+#board_player2 = 0b11101111001000000010000000000000;
+#board_kings   = 0b00000000000000000000000000000000;
+
+#[525311, 4262920192L, 0] #H doesn't move to wall...
+#[531071, 4231462912L, 0] #O moves from back wall...
+#[2080, 352632848L, 0] #O moved bottom left of triangle, should have stayed to block?
 board = [board_player1, board_player2, board_kings]
 
 print "The board is a length 3 list of 32bit unsigned integers."
@@ -110,15 +117,14 @@ while bin(board[0]).count('1') != 0 and bin(board[1]).count('1') != 0:
             sleep(wait)
             print "And now it's moved:"
         else:
-            print "Do AI, dumby"
+            print "The computer is searching..."
             globes.timer = time()
             [piece, dest, jumped,holder] = do_ai(board,player)
             show_moves(piece,board,player)
             current_time = time() - globes.timer
             print "Computer took " + str(current_time) + " seconds to move."
-            print "Holder is " + str(holder)
+            print "Search state evaluation is " + str(holder)
         
-
     elif player == 0: #player's turn
         print "Player 1's turn."
         show = raw_input('Show all possible moves? (y/n)') == 'y'
@@ -158,17 +164,25 @@ while bin(board[0]).count('1') != 0 and bin(board[1]).count('1') != 0:
                 sleep(wait)
                 print "And now it's moved:"
             else:
-                print "Do AI, dumby"
+                print "The computer is searching..."
                 globes.timer = time()
                 [piece, dest, jumped, holder] = do_ai(board,player)
                 show_moves(piece,board,player)
                 current_time = time() - globes.timer
                 print "Computer took " + str(current_time) + " seconds to move."
-                print "Holder is " + str(holder)
+                print "Search state evaluation is " + str(holder)
+
+    old_board = board
 
     state = after_move([piece,[dest,jumped]],[board,player])
     board = state[0]
-    printboard(board)        
+    print "Previous state evaluation is " + str(heuristic([old_board,player]))
+    print "Current state evaluation is " + str(heuristic([board,player]))
+    print "Old board: " + str(old_board)
+    print "Board: " + str(board)
+    printboard(board)
+
+#    blank = raw_input('Continue?') == 'blank'
 
     if bin(board[0]).count('1') == 0:
         print "PLAYER 2 WINS!!1!one!!"

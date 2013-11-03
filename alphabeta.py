@@ -34,7 +34,7 @@ def alphabeta(state,depth,depth_limit,alpha,beta,maxp,op,first=0):
             return [h,moves,1,1]
         for i in range(0,len(moves)):
             temp_state = after_move(moves[i],state)
-            [a_temp,move_temp,timeout,holder] = alphabeta(temp_state,depth+1,depth_limit,alpha,beta,0,op)
+            [a_temp,move_temp,timeout,holder] = alphabeta(temp_state,depth+1,depth_limit,float('-inf'),float('inf'),0,op)
             if timeout:
                 break
             if a_temp > alpha:
@@ -60,7 +60,7 @@ def alphabeta(state,depth,depth_limit,alpha,beta,maxp,op,first=0):
         moves = get_all_moves(state)
         for i in range(0,len(moves)):
             temp_state = after_move(moves[i],state)
-            [b_temp,move_temp,timeout,holder] = alphabeta(temp_state,depth+1,depth_limit,alpha,beta,1,op)
+            [b_temp,move_temp,timeout,holder] = alphabeta(temp_state,depth+1,depth_limit,float('-inf'),float('inf'),1,op)
             if timeout:
                 break
             if b_temp < beta:

@@ -13,7 +13,7 @@ def check_all_moves(board,player):
     jump_dests = []
     for i in range(0,32):
         test_piece = 2**i
-        if (board[player] & (test_piece)) and board[player] - (test_piece) >= 0:
+        if (board[player] & (test_piece)):
             [piece,dests,jumped] = find_moves(test_piece,board,player)
             if dests != []:
                 all_pieces.extend([piece])
