@@ -19,7 +19,7 @@ def after_move(move,state):
     king = 2
 
     #if piece was king
-    if bin(board[king]).count('1') - 1 == bin(board[king] - (piece)).count('1'):
+    if board[king] & piece:
         #update king position
         board[king] = board[king]-piece+dest
     else:
@@ -35,7 +35,7 @@ def after_move(move,state):
         for i in range(0,len(jumped)):
             board[1-player] = board[1-player] - jumped[i]
             #if jumped piece was king
-            if bin(board[king]).count('1') - 1 == bin(board[king] - (jumped[i])).count('1'):
+            if board[king] & jumped[i]:
                 #update king position
                 board[king] = board[king]-jumped[i]
 

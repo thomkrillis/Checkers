@@ -17,25 +17,54 @@ def heuristic(state):
     ok = 0 #number of opponent kings
 
     #count player kings
-    for i in range(0,32):
-        test_piece = 2**i
-        if bin(board[king]).count('1') - 1 == bin(board[king] - (test_piece)).count('1') and board[king] - (test_piece) >= 0:
-            if bin(board[player]).count('1') - 1 == bin(board[player] - (test_piece)).count('1') and board[player] - (test_piece) >= 0:
-                pk = pk + 1
-            elif bin(board[1-player]).count('1') - 1 == bin(board[1-player] - (test_piece)).count('1') and board[1-player] - (test_piece) >= 0:
-                ok = ok + 1
+    pk = bin(board[player] & board[2]).count('1')
+    ok = bin(board[1-player] & board[2]).count('1')
 
-    #count pieces on back wall
+    #non-kings
+    noking = []
+    noking.append(board[0] - (board[0] & board[2]))
+    noking.append(board[1] - (board[1] & board[2]))
+
+    #count pieces on back wall (except kings)
     if player == 0:
-        pw = bin(board[0])[2:].zfill(32)[28:32].count('1') #player pieces on wall
-        ow = bin(board[1])[2:].zfill(32)[0:4].count('1') #opponent pieces on wall
+        pb = bin(noking[0])[2:].zfill(32)[28:32].count('1') #player pieces on back wall
+        ob = bin(noking[1])[2:].zfill(32)[0:4].count('1') #opponent pieces on back wall
     if player == 1:
-        ow = bin(board[0])[2:].zfill(32)[28:32].count('1') #opponent pieces on wall
-        pw = bin(board[1])[2:].zfill(32)[0:4].count('1') #player pieces on wall
+        ob = bin(noking[0])[2:].zfill(32)[28:32].count('1') #opponent pieces on back wall
+        pb = bin(noking[1])[2:].zfill(32)[0:4].count('1') #player pieces on back wall
 
+    #count pieces on side wall (except kings)
+    ps = bin(noking[player])[2:].zfill(32)[4::8].count('1') #number of player pieces on side walls
+    os = bin(noking[1-player])[2:].zfill(32)[4::8].count('1') #number of opponent pieces on side walls
+    ps = ps + bin(noking[player])[2:].zfill(32)[3::8].count('1') #number of player pieces on side walls
+    os = os + bin(noking[1-player])[2:].zfill(32)[3::8].count('1') #number of opponent pieces on side walls
 
-    #heuristic is all player's piece minus all opponent's pieces (kings count as 1.5 pieces)
-    h = pp - op + 0.75 * (pk - ok) + 0.5 * (pw - ow)
+    #incentivize forward movement (except kings, and back row, sort of...)
+    pfm = 0
+    ofm = 0
+    if player == 0:
+        for i in range(0,6):
+            pfm = pfm + (6-i) * bin(noking[0])[2:].zfill(32)[4*i:4*i+4].count('1')
+            ofm = ofm + (i+1) * bin(noking[1])[2:].zfill(32)[4*i+8:4*i+12].count('1')
+    if player == 1:
+        for i in range(0,6):
+            ofm = ofm + (6-i) * bin(noking[0])[2:].zfill(32)[4*i:4*i+4].count('1')
+            pfm = pfm + (i+1) * bin(noking[1])[2:].zfill(32)[4*i+8:4*i+12].count('1')
+
+    #incentivize kings to move toward centre
+    kings = []
+    kings.append(bin(board[0] & board[2])[2:].zfill(32))
+    kings.append(bin(board[1] & board[2])[2:].zfill(32))
+    pkc = kings[0][9:22:4].count('1') + kings[0][10:23:4].count('1') + kings[0][14:18:3].count('1')
+    okc = kings[0][9:22:4].count('1') + kings[0][10:23:4].count('1') + kings[0][14:18:3].count('1')
+
+    #when fewer pieces, make kings more desirable
+    kingscale = 0
+    if pp + op < 10:
+        kingscale = 2
+
+    #heuristic is all player's piece minus all opponent's pieces (kings count as 2.25 pieces, etc. 84 is above max values of fm's)
+    h = pp - op + (1.25 + kingscale) * (pk - ok) + 0.75 * (pb - ob) + 0.5 * (ps - os) + 0.25 * (pfm - ofm)/84 + 0.5 * (pkc - okc)
 
     #if player is going to lose, it's REALLY undesirable
     if pp == 0:

@@ -41,7 +41,24 @@ board_player1 = 0b00000000000000000000111111111111;
 board_player2 = 0b11111111111100000000000000000000;
 board_kings   = 0b00000000000000000000000000000000;
 
+#board_player1 = 0b00000000000000000000000001010000;
+#board_player2 = 0b00000010000000000000000000000000;
+#board_kings   = 0b00000010000000000000000001010000;
+
+#board_player1 = 0b00010001000100010001000100010001;
+#board_player2 = 0b10001000100010001000100010001000;
+#board_kings   = 0b00000000000000000000000000000000;
+
 board = [board_player1, board_player2, board_kings]
+
+print "The board is a length 3 list of 32bit unsigned integers."
+print "The integers represent the positions of the bottom player,"
+print "player 1, and the kings, repectively."
+print "The standard board is"
+
+custom = raw_input('Do you wish to load a board? (y/n) ') == 'y'
+if custom:
+    board = input('Enter board as [x,y,z] (32bit unsigned ints): ')
 
 printboard(board)
 
@@ -51,20 +68,36 @@ printboard(board)
 wait = 0 #time to wait as random computer makes moves
 player = 0 #0 indicates black (bottom), 1 is red (top)
 turn = 0 #indicate which turn it is
+switch = 0 #if two computers (one random, one AI)
 two_pl = raw_input('Two player game? (y/n)') == 'y'
 if two_pl:
     self = 0
+    player = raw_input('Who should go first (top or bottom)? (t/b) ') == 't'
 else:
-    random = raw_input('Should computer play randomly? (y/n)') == 'y'
-    self = raw_input('Should computer play itself? (y/n)') == 'y'
-    if not random:
-        globes.limit = input('What is the AI time limit? (seconds)')
+    self = raw_input('Should computer play itself? (y/n) ') == 'y'
+    if self:
+        random = raw_input('Should both computers play randomly? (y/n) ') == 'y'
+        if not random:
+            switch = raw_input('Should one computer play randomly (the top one)? (y/n) ') == 'y'            
+            player = raw_input('Who should go first (top or bottom)? (t/b) ') == 't'
+            globes.limit = input('What is the AI time limit? (seconds) ')
+            if switch:
+                wait = input('What is the wait time to read random computer moves? (seconds) ')
+        else:
+            wait = input('What is the wait time to read moves? (seconds) ')
+    else:
+        random = raw_input('Should computer play randomly? (y/n) ') == 'y'
+        player = raw_input('Who should go first (human or computer)? (h/c) ') == 'c'
+        if not random:
+            globes.limit = input('What is the AI time limit? (seconds) ')
+        else:
+            wait = input('What is the wait time to read moves? (seconds) ')
 
 while bin(board[0]).count('1') != 0 and bin(board[1]).count('1') != 0:
     print "Turn: " + str(turn)
     if self:
         #make computer play itself
-        if random:
+        if random or (switch and player):
             sleep(wait)
             print "Computer " + str(player+1) + " is looking at its options."
             all_pieces = show_all_moves(board,player)
@@ -84,6 +117,7 @@ while bin(board[0]).count('1') != 0 and bin(board[1]).count('1') != 0:
             current_time = time() - globes.timer
             print "Computer took " + str(current_time) + " seconds to move."
             print "Holder is " + str(holder)
+        
 
     elif player == 0: #player's turn
         print "Player 1's turn."

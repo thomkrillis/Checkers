@@ -16,7 +16,7 @@ def alphabeta(state,depth,depth_limit,alpha,beta,maxp,op,first=0):
     choice_moves = []
     timeout = 0
     percent = 0.97
-    offset = 0.08
+    offset = 0.05
 
     if depth_limit - depth == 0 or bin(state[0][0])[2:].count('1') == 0 or bin(state[0][1])[2:].count('1') == 0:
         state[1] = op
@@ -43,7 +43,7 @@ def alphabeta(state,depth,depth_limit,alpha,beta,maxp,op,first=0):
                 choice_moves = [move]
             elif a_temp == alpha:
                 choice_moves.append([moves[i]])
-            if beta < alpha:
+            if beta <= alpha:
                 break
             current_time = time() - globes.timer
             if current_time > percent * globes.limit - offset:
@@ -69,7 +69,7 @@ def alphabeta(state,depth,depth_limit,alpha,beta,maxp,op,first=0):
                 choice_moves = [move]
             elif b_temp == beta:
                 choice_moves.extend([moves[i]])
-            if beta < alpha:
+            if beta <= alpha:
                 break
             current_time = time() - globes.timer
             if current_time > percent * globes.limit - offset:

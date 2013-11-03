@@ -12,19 +12,19 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
     dests = []
     jumped = []
     king_piece = 0
-    if king or bin(board[2]).count('1') - 1 == bin(board[2] - (piece)).count('1'):
+    if king or (board[2] & piece):
         king_piece = 1
 
     if player == 0 or (player == 1 and king_piece == 1):
         if 134217728 >= piece: #make sure piece not larger than board
             if row_mod(piece) != 0: #check which row piece is on (even in this case)
                 #up and left
-                if bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<4)).count('1'):
+                if not (sum(board[:2]) & (piece<<4)):
                     if fm:
                         if 2147483648L >= piece<<4:
                             dests.append(piece<<4)
                             jumped.append('')
-                elif root != 'ul' and col_mod(piece) != 3 and bin(board[player]).count('1') - 1 != bin(board[player] - (piece<<4)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<9)).count('1'):
+                elif root != 'ul' and col_mod(piece) != 3 and not (board[player] & (piece<<4)) and not (sum(board[:2]) & (piece<<9)):
                     if 2147483648L >= piece<<9:
                         if king_piece:
                             old_piece = piece
@@ -50,12 +50,12 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                             jumped.extend([piece<<4])
                 if col_mod(piece) != 0: #make sure not right edge
                     #up and right
-                    if bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<3)).count('1'):
+                    if not (sum(board[:2]) & (piece<<3)):
                         if fm:
                             if 2147483648L >= piece<<3:
                                 dests.append(piece<<3)
                                 jumped.append('')
-                    elif root != 'ur' and bin(board[player]).count('1') - 1 != bin(board[player] - (piece<<3)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<7)).count('1'):
+                    elif root != 'ur' and not (board[player] & (piece<<3)) and not (sum(board[:2]) & (piece<<7)):
                         if 2147483648L >= piece<<7:
                             if king_piece:
                                 old_piece = piece
@@ -82,12 +82,12 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
             else: #odd row
                 if col_mod(piece) != 3: #make sure not left edge
                     #up and left
-                    if bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<5)).count('1'):
+                    if not (sum(board[:2]) & (piece<<5)):
                         if fm:
                             if 2147483648L >= piece<<5:
                                 dests.append(piece<<5)
                                 jumped.append('')
-                    elif root != 'ul' and bin(board[player]).count('1') - 1 != bin(board[player] - (piece<<5)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<9)).count('1'):
+                    elif root != 'ul' and not (board[player] & (piece<<5)) and not (sum(board[:2]) & (piece<<9)):
                         if 2147483648L >= piece<<9:
                             if king_piece:
                                 old_piece = piece
@@ -112,12 +112,12 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                             else:
                                 jumped.extend([piece<<5])
                 #up and right
-                if bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<4)).count('1'):
+                if not (sum(board[:2]) & (piece<<4)):
                     if fm:
                         if 2147483648L >= piece<<4:
                             dests.append(piece<<4)
                             jumped.append('')
-                elif root != 'ur' and col_mod(piece) != 0 and bin(board[player]).count('1') - 1 != bin(board[player] - (piece<<4)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece<<7)).count('1'):
+                elif root != 'ur' and col_mod(piece) != 0 and not (board[player] & (piece<<4)) and not (sum(board[:2]) & (piece<<7)):
                     if 2147483648L >= piece<<7:
                         if king_piece:
                             old_piece = piece
@@ -148,12 +148,12 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
         if 0 < piece: #make sure piece not smaller than board
             if row_mod(piece) == 0: #check which row piece is on (odd in this case)
                 #down and right
-                if bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>4)).count('1'):
+                if not (sum(board[:2]) & (piece>>4)):
                     if fm:
                         if 0 < piece>>4:
                             dests.append(piece>>4)
                             jumped.append('')
-                elif root != 'dr' and col_mod(piece) != 0 and bin(board[player]).count('1') - 1 != bin(board[player] - (piece>>4)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>9)).count('1'):
+                elif root != 'dr' and col_mod(piece) != 0 and not (board[player] & (piece>>4)) and not (sum(board[:2]) & (piece>>9)):
                     if 0 < piece>>9:
                         if king_piece:
                             old_piece = piece
@@ -179,12 +179,12 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                             jumped.extend([piece>>4])
                 if col_mod(piece) != 3: #make sure not left edge
                     #down and left
-                    if bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>3)).count('1'):
+                    if not (sum(board[:2]) & (piece>>3)):
                         if fm:
                             if 0 < piece>>3:
                                 dests.append(piece>>3)
                                 jumped.append('')
-                    elif root != 'dl' and bin(board[player]).count('1') - 1 != bin(board[player] - (piece>>3)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>7)).count('1'):
+                    elif root != 'dl' and not (board[player] & (piece>>3)) and not (sum(board[:2]) & (piece>>7)):
                         if 0 < piece>>7:
                             if king_piece:
                                 old_piece = piece
@@ -211,12 +211,12 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
             else: #even row
                 if col_mod(piece) != 0: #make sure not right edge
                     #down and right
-                    if bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>5)).count('1'):
+                    if not (sum(board[:2]) & (piece>>5)):
                         if fm:
                             if 0 < piece>>5:
                                 dests.append(piece>>5)
                                 jumped.append('')
-                    elif root != 'dr' and bin(board[player]).count('1') - 1 != bin(board[player] - (piece>>5)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>9)).count('1'):
+                    elif root != 'dr' and not (board[player] & (piece>>5)) and not (sum(board[:2]) & (piece>>9)):
                         if 0 < piece>>9:
                             if king_piece:
                                 old_piece = piece
@@ -241,12 +241,12 @@ def find_moves(piece,board,player,fm=1,king=0,root=''):
                             else:
                                 jumped.extend([piece>>5])
                 #down and left
-                if bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>4)).count('1'):
+                if not (sum(board[:2]) & (piece>>4)):
                     if fm:
                         if 0 < piece>>4:
                             dests.append(piece>>4)
                             jumped.append('')
-                elif root != 'dl' and col_mod(piece) != 3 and bin(board[player]).count('1') - 1 != bin(board[player] - (piece>>4)).count('1') and bin(sum(board[:2])).count('1') - 1 != bin(sum(board[:2]) - (piece>>7)).count('1'):
+                elif root != 'dl' and col_mod(piece) != 3 and not (board[player] & (piece>>4)) and not (sum(board[:2]) & (piece>>7)):
                     if 0 < piece>>7:
                         if king_piece:
                             old_piece = piece
